@@ -10,8 +10,7 @@ import com.pvergara.lab.akkahttp.http.JsonSupport
   * Class Route WS Users Data
   * @param controller type UserModel
   */
-class UserRoute(implicit controller: BaseController[UserModel])
-  extends JsonSupport {
+class UserRoute(implicit controller: BaseController[UserModel]) extends JsonSupport {
 
   val route = pathPrefix("user") {
     path("id" / Segment) { pathParam =>
