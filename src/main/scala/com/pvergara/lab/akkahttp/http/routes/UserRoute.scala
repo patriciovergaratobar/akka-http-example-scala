@@ -61,7 +61,7 @@ class UserRoute(implicit controller: BaseController[UserModel]) extends JsonSupp
               ContentTypes.`application/json`,
               basicResponseJson
                 .write(
-                  BasicResponseModel(controller.detele(pathParam.toInt), ""))
+                  BasicResponseModel(controller.detele(pathParam.toInt), s"User ${pathParam.toString} deleted."))
                 .toString()
             )
         )
