@@ -1,17 +1,23 @@
 package com.pvergara.lab.akkahttp
 
+import java.io.File
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import com.pvergara.lab.akkahttp.http.HttpRoute
-import spray.json.DefaultJsonProtocol._
+import com.typesafe.config.ConfigFactory
 
 import scala.io.StdIn
 
 object WebServer extends App with HttpRoute {
+
+  val DEFAULT_CONF = "src/main/resources/application.conf"
+  val ENV_FILE_CONF = "AKKA_SERVER_CONF"
+
+  val env = if (System.getenv(ENV_FILE_CONF) == null) DEFAULT_CONF else System.getenv(ENV_FILE_CONF)
+
+  val conf = ConfigFactory.parseFile(new File(env))
 
   //Clase modelo de la respuesta
   final case class DatoModel(name: String, id: Long)
@@ -23,9 +29,12 @@ object WebServer extends App with HttpRoute {
   // necesario para el futuro flatMap / onComplete al final
   implicit val executionContext = system.dispatcher
 
-  val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+  val host = conf.getString("http.host")
+  val port = conf.getInt("http.port")
 
-  println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
+  val bindingFuture = Http().bindAndHandle(route, host, port)
+
+  println(s"Server online at http://${host}:${port}/ \nPress RETURN to stop...")
 
   StdIn.readLine() // déjalo funcionar hasta que el usuario presione regresar
     /*Se finaliza el proceso*/

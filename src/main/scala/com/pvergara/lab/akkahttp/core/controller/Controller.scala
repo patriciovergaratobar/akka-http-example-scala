@@ -1,8 +1,14 @@
 package com.pvergara.lab.akkahttp.core.controller
 
-import com.pvergara.lab.akkahttp.model.UserModel
+import com.pvergara.lab.akkahttp.model.{AuthModel, UserModel}
 
 object Controller {
+
+  trait AuthBaseController[A] {
+
+    def validate(auth: A): Boolean
+    def getUserByAuth(auth: A): UserModel
+  }
 
   trait BaseController[A] {
 
@@ -11,6 +17,13 @@ object Controller {
     def create(data: A): Boolean
     def update(data: A): Boolean
     def detele(id: Int): Boolean
+  }
+
+  implicit object AuthUserController extends AuthBaseController[AuthModel] {
+
+    override def validate(auth: AuthModel): Boolean = true
+
+    override def getUserByAuth(auth: AuthModel): UserModel = UserModel(1, "pvergara", "Patricio",  "Vergara", 16, "pvergara@test.cl", 8988827, "ADMIN")
   }
 
   implicit object UserController extends BaseController[UserModel] {
@@ -36,7 +49,5 @@ object Controller {
 
     override def detele(id: Int): Boolean = true
   }
-
-
 
 }

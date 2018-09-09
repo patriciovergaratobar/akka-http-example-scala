@@ -1,6 +1,5 @@
 package com.pvergara.lab.akkahttp.http.routes
 
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Directives.{put, _}
 import com.pvergara.lab.akkahttp.model.{BasicResponseModel, UserModel, UsersModel}
 import com.pvergara.lab.akkahttp.core.controller.Controller.BaseController
@@ -15,56 +14,21 @@ class UserRoute(implicit controller: BaseController[UserModel]) extends JsonSupp
   val route = pathPrefix("user") {
     path("id" / Segment) { pathParam =>
       get {
-        complete(
-          StatusCodes.OK ->
-            HttpEntity(
-              ContentTypes.`application/json`,
-              userJsonFormat.write(controller.get(pathParam.toInt)).toString()
-            )
-        )
+        complete(controller.get(pathParam.toInt))
       }
     } ~ get {
-      complete(
-        StatusCodes.OK ->
-          HttpEntity(
-            ContentTypes.`application/json`,
-            usersJsonFormat.write(UsersModel(controller.getAll())).toString()
-          )
-      )
+      complete(UsersModel(controller.getAll()))
     } ~ post {
       entity(as[UserModel]) { user =>
-        complete(
-          StatusCodes.OK -> HttpEntity(
-            ContentTypes.`application/json`,
-            basicResponseJson
-              .write(BasicResponseModel(controller.create(user), ""))
-              .toString()
-          )
-        )
+        complete(BasicResponseModel(controller.create(user), ""))
       }
     } ~ put {
       entity(as[UserModel]) { user =>
-        complete(
-          StatusCodes.OK -> HttpEntity(
-            ContentTypes.`application/json`,
-            basicResponseJson
-              .write(BasicResponseModel(controller.update(user), ""))
-              .toString()
-          )
-        )
+        complete(BasicResponseModel(controller.update(user), ""))
       }
     } ~ path(Segment) { pathParam =>
       delete {
-        complete(
-          StatusCodes.OK ->
-            HttpEntity(
-              ContentTypes.`application/json`,
-              basicResponseJson
-                .write(
-                  BasicResponseModel(controller.detele(pathParam.toInt), s"User ${pathParam.toString} deleted."))
-                .toString()
-            )
-        )
+        complete(BasicResponseModel(controller.detele(pathParam.toInt), s"User ${pathParam.toString} deleted."))
       }
     }
   }
