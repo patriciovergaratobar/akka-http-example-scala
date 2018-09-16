@@ -12,4 +12,5 @@ object SessionStore {
   def validateToken(token: String): Boolean = storeSession contains token
   def saveToken(auth: AuthAccessModel): Unit = storeSession put(auth.token, auth)
   def removeToken(token: String): Unit = storeSession remove(token)
+  
 }

@@ -1,7 +1,6 @@
 package com.pvergara.lab.akkahttp
 
 import java.io.File
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
@@ -10,7 +9,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.io.StdIn
 
-object WebServer extends App with HttpRoute {
+object WebServer extends App with HttpRoute  {
 
   val DEFAULT_CONF = "src/main/resources/application.conf"
   val ENV_FILE_CONF = "AKKA_SERVER_CONF"
@@ -34,7 +33,8 @@ object WebServer extends App with HttpRoute {
 
   val bindingFuture = Http().bindAndHandle(route, host, port)
 
-  println(s"Server online at http://${host}:${port}/ \nPress RETURN to stop...")
+  logger.info("Start Server")
+  logger.info(s"Server online at http://${host}:${port}/ \nPress RETURN to stop...")
 
   StdIn.readLine() // déjalo funcionar hasta que el usuario presione regresar
     /*Se finaliza el proceso*/

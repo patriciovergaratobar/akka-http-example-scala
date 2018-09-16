@@ -16,7 +16,10 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
       "io.jsonwebtoken" % "jjwt-impl" % "0.10.5",
       "io.jsonwebtoken" % "jjwt-api" % "0.10.5",
-      "io.jsonwebtoken" % "jjwt-jackson" % "0.10.5"
+      "io.jsonwebtoken" % "jjwt-jackson" % "0.10.5",
+      "org.apache.logging.log4j" % "log4j-api" % "2.11.1",
+      "org.apache.logging.log4j" % "log4j-core" % "2.11.1",
+      "org.apache.logging.log4j" %% "log4j-api-scala" % "11.0"
 
     )
   )
