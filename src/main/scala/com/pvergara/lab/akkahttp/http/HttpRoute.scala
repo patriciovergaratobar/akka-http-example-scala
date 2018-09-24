@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import com.pvergara.lab.akkahttp.http.routes.{AuthRoute, UserRoute}
 import org.apache.logging.log4j.scala.Logging
 
+
 trait HttpRoute extends JsonSupport with Logging {
 
   private val userRoute = new UserRoute()

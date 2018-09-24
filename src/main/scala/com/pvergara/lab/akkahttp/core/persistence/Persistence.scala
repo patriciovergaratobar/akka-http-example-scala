@@ -17,7 +17,7 @@ object Persistence {
   trait BasePersistence[A] {
 
     def getAll(): List[A]
-    def get(id: Int): A
+    def get(id: Int): Option[A]
     def create(data: A): Boolean
     def update(data: A): Boolean
     def detele(id: Int): Boolean
@@ -25,19 +25,47 @@ object Persistence {
 
   implicit object AuthUserPersistence extends AuthBasePersistence[AuthModel] {
 
-    override def validate(auth: AuthModel): Boolean = {
-      val u = AuthModelMapper.syntax("uu")
-      val validate: Option[AuthModel] = withSQL { select.from(AuthModelMapper as u).where.eq(u.username, auth.username).and.eq(u.password, auth.password)}.map(AuthModelMapper(u.resultName)).single.apply()
-      validate.nonEmpty
-    }
+    val au = AuthModelMapper.syntax("au")
+    val u = UserModelMapper.syntax("uu")
 
-    override def getUserByAuth(auth: AuthModel): Option[UserModel] = {
-      val u = UserModelMapper.syntax("uu")
-      withSQL { select.from(UserModelMapper as u).where.eq(u.userName, auth.username)}.map(UserModelMapper(u.resultName)).single.apply()
-    }
+    override def validate(auth: AuthModel): Boolean = withSQL {
+      select.from(AuthModelMapper as au)
+        .where.eq(au.username, auth.username)
+        .and.eq(au.password, auth.password)}
+      .map(AuthModelMapper(au.resultName))
+      .single.apply()
+      .nonEmpty
+
+
+    override def getUserByAuth(auth: AuthModel): Option[UserModel] = withSQL {
+      select.from(UserModelMapper as u)
+        .where.eq(u.userName, auth.username)}
+      .map(UserModelMapper(u.resultName))
+      .single.apply()
+
   }
 
+  implicit object UserPersistence extends BasePersistence[UserModel] {
 
+    val u = UserModelMapper.syntax("uu")
 
+    override def getAll(): List[UserModel] =  withSQL {
+      select.from(UserModelMapper as u)}
+      .map(UserModelMapper(u.resultName))
+      .list.apply()
+
+    override def get(id: Int): Option[UserModel] = withSQL {
+      select.from(UserModelMapper as u)
+        .where.eq(u.id, id)}
+      .map(UserModelMapper(u.resultName))
+      .single.apply()
+
+    override def create(data: UserModel): Boolean = sql"insert into user (username, password, email, name, last_name, age, phono, perfil) values (${data.userName}, ${data.userName},  ${data.mail}, ${data.name}, ${data.lastName}, ${data.age}, ${data.phono}, ${data.perfil})"
+        .update.apply().==(1)
+
+    override def update(data: UserModel): Boolean = false
+
+    override def detele(id: Int): Boolean =  sql"delete from user WHERE user_id = ${id}".update.apply().==(1)
+  }
 
 }

@@ -17,7 +17,9 @@ case class UserModel(id: Int = 0, userName: String = "", name: String = "", last
 
 
 /*
-MAPPERS OF THE APP
+
+MAPPERS  APP
+
 */
 
 object AuthModelMapper extends SQLSyntaxSupport[AuthModel] {

@@ -9,7 +9,6 @@ import com.typesafe.config.ConfigFactory
 
 import scala.io.StdIn
 
-import scalikejdbc._
 import scalikejdbc.config._
 
 object WebServer extends App with HttpRoute  {
@@ -21,14 +20,10 @@ object WebServer extends App with HttpRoute  {
 
   val conf = ConfigFactory.parseFile(new File(env))
 
-  //Se abre la conexion tomando los parametros  que se encuentran en application.conf
-  DBs.setupAll()
-
   //Clase modelo de la respuesta
   final case class DatoModel(name: String, id: Long)
   //Se define implicitamente el formato el json.
   implicit val datoFormat = jsonFormat2(DatoModel);
-
   implicit val system = ActorSystem("my-system")
   implicit val materializer = ActorMaterializer()
   // necesario para el futuro flatMap / onComplete al final
@@ -38,6 +33,10 @@ object WebServer extends App with HttpRoute  {
   val port = conf.getInt("http.port")
 
   val bindingFuture = Http().bindAndHandle(route, host, port)
+
+  //Se abre la conexion tomando los parametros  que se encuentran en application.conf
+  logger.info("Start connection DB")
+  DBs.setupAll()
 
   logger.info("Start Server")
   logger.info(s"Server online at http://${host}:${port}/ \nPress RETURN to stop...")
