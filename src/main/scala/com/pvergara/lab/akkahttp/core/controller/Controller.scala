@@ -11,7 +11,7 @@ object Controller {
     def getUserByAuth(auth: A): UserModel
   }
 
-  abstract class BaseController[A](implicit val persistence : BasePersistence[A]) {
+  abstract class BaseController[A] {
 
     def getAll(): List[A]
     def get(id: Int): A
