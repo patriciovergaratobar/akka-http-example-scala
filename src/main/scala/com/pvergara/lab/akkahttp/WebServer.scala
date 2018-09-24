@@ -9,6 +9,9 @@ import com.typesafe.config.ConfigFactory
 
 import scala.io.StdIn
 
+import scalikejdbc._
+import scalikejdbc.config._
+
 object WebServer extends App with HttpRoute  {
 
   val DEFAULT_CONF = "src/main/resources/application.conf"
@@ -17,6 +20,9 @@ object WebServer extends App with HttpRoute  {
   val env = if (System.getenv(ENV_FILE_CONF) == null) DEFAULT_CONF else System.getenv(ENV_FILE_CONF)
 
   val conf = ConfigFactory.parseFile(new File(env))
+
+  //Se abre la conexion tomando los parametros  que se encuentran en application.conf
+  DBs.setupAll()
 
   //Clase modelo de la respuesta
   final case class DatoModel(name: String, id: Long)
@@ -40,5 +46,11 @@ object WebServer extends App with HttpRoute  {
     /*Se finaliza el proceso*/
   bindingFuture
       .flatMap(_.unbind()) // desencadenar la desvinculación del puerto
-      .onComplete(_ => system.terminate()) // y apagado cuando esté hecho
+      .onComplete(_ => {
+
+    DBs.closeAll()
+    system.terminate()
+  } ) // y apagado cuando esté hecho
+
+
 }
