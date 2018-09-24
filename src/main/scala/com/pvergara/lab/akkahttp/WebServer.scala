@@ -41,15 +41,19 @@ object WebServer extends App with HttpRoute  {
   logger.info("Start Server")
   logger.info(s"Server online at http://${host}:${port}/ \nPress RETURN to stop...")
 
-  StdIn.readLine() // déjalo funcionar hasta que el usuario presione regresar
-    /*Se finaliza el proceso*/
-  bindingFuture
-      .flatMap(_.unbind()) // desencadenar la desvinculación del puerto
-      .onComplete(_ => {
+  /**
+    * Se activa cuando Ctrl+c
+    */
+  sys.ShutdownHookThread {
 
-    DBs.closeAll()
-    system.terminate()
-  } ) // y apagado cuando esté hecho
+    /*Se finaliza el proceso*/
+    // desencadenar la desvinculación del puerto
+    bindingFuture.flatMap(_.unbind()).onComplete(_ => {
+      DBs.closeAll()
+      system.terminate()
+    }) // y apagado cuando esté hecho
+    println("exiting")
+  }
 
 
 }
